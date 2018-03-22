@@ -242,21 +242,19 @@ class NewBook extends React.Component {
               </span>
               <section className="cardinality">
                 <section>
-                  <input
+                  <LanguageSearchBar
                     className="new language source"
-                    type="text"
                     name="source_language"
                     placeholder="Source language"
                     value={this.state.sourceLanguage}
                     onChange={this.onInputChange}
                   />
                   <img src={this.props.cardinality} alt="" />
-                  <input
+                  <LanguageSearchBar
                     className="new language target"
-                    type="text"
                     name="target_language"
                     placeholder="Target language"
-                    value={this.state.targetLanguager}
+                    value={this.state.targetLanguage}
                     onChange={this.onInputChange}
                   />
                 </section>
