@@ -24,11 +24,11 @@ class BooksController < AuthenticatedController
   def create
     book = current_user.books.build(create_or_update_params)
 
-    if book.source_language_id.length == 0:
+    if book.source_language_id.length == 0
       # TODO: verbatim search source_language in ontology, and set id if there is a result
     end
 
-    if book.target_language_id.length == 0:
+    if book.target_language_id.length == 0
       # TODO: verbatim search target_language in ontology, and set id if there is a result
     end
 

@@ -304,6 +304,9 @@ class NewBook extends React.Component {
                                 this.setState({ language_suggestions: [] })
                               } else {
                                 this.setState({ language_suggestions: res })
+                                if (res.length == 1) {
+                                  this.setState({ target_language_id: res[0].glottocode });
+                                }
                               }
                             }
                           );
@@ -338,9 +341,12 @@ class NewBook extends React.Component {
                             `http://localhost:8080/bp/api/search?bpsearch=${value}`,
                             res => {
                               if (res[0].message) {
-                                this.setState({ language_suggestions: [] })
+                                this.setState({ language_suggestions: [] });
                               } else {
-                                this.setState({ language_suggestions: res })
+                                this.setState({ language_suggestions: res });
+                                if (res.length == 1) {
+                                  this.setState({ target_language_id: res[0].glottocode });
+                                }
                               }
                             }
                           );
