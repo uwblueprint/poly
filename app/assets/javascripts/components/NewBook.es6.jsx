@@ -13,6 +13,9 @@ class NewBook extends React.Component {
       stream: '',
       isVideoRecording: false,
       isDescriptionPlaying: false,
+      language_suggestions: [],
+      source_language_id: '',
+      target_language_id: '',
     };
     this.onCloseVideoComponent = this.onCloseVideoComponent.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
@@ -28,6 +31,8 @@ class NewBook extends React.Component {
     this.playButton = this.playButton.bind(this);
     this.pauseButton = this.pauseButton.bind(this);
     this.onDeleteVideoDescription = this.onDeleteVideoDescription.bind(this);
+    this.renderLanguageSuggestion = this.renderLanguageSuggestion.bind(this);
+    this.renderDropdownMenu = this.renderDropdownMenu.bind(this);
   }
 
   onInputChange(e) {
@@ -223,6 +228,39 @@ class NewBook extends React.Component {
     $("video")[0].pause()
   }
 
+  httpGetAsync(url, callback) {
+    $.ajax({
+      url: url,
+      type: 'GET',
+      success(res) {
+        callback(res);
+      },
+      error(error) {
+        printErrors(error);
+      },
+    });
+  }
+
+  renderLanguageSuggestion(item, isHighlighted) {
+    return (
+      <div
+        className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
+        key={item.glottocode}
+      >
+        {item.name + " - " + item.glottocode}
+      </div>
+    );
+  }
+
+  renderDropdownMenu(children) {
+    return (
+      <div className="dropdown-menu">
+        {children}
+      </div>
+    );
+  }
+
+
   render() {
     return (
       <div className="container">
@@ -242,21 +280,78 @@ class NewBook extends React.Component {
               </span>
               <section className="cardinality">
                 <section>
-                  <LanguageSearchBar
-                    className="new language source"
-                    name="source_language"
-                    placeholder="Source language"
-                    value={this.state.sourceLanguage}
-                    onChange={this.onInputChange}
-                  />
+                  <div className="autosuggest">
+                    <ReactAutocomplete
+                      inputProps={{ className: "new language source", name: "source_language", placeholder: "Source language" }}
+                      wrapperStyle={{ position: 'relative', display: 'block' }}
+                      value={this.state.source_language}
+                      items={this.state.language_suggestions}
+                      getItemValue={(item) => item.name} // TODO change name to something more appropriate
+                      onSelect={(value, item) => {
+                        this.setState({
+                          source_language: value,
+                          source_language_id: item.glottocode,
+                          language_suggestions: [item]
+                        });
+                      }}
+                      onChange={(event, value) => {
+                        this.setState({ source_language: value, target_language_id: '' })
+                        if(value.length > 2){
+                          this.httpGetAsync(
+                            `http://localhost:8080/bp/api/search?bpsearch=${value}`,
+                            res => {
+                              if (res[0].message) {
+                                this.setState({ language_suggestions: [] })
+                              } else {
+                                this.setState({ language_suggestions: res })
+                              }
+                            }
+                          );
+                        } else {
+                          this.setState({ language_suggestions: [] });
+                        }
+                      }}
+                      renderMenu={this.renderDropdownMenu}
+                      renderItem={this.renderLanguageSuggestion}
+                    />
+                  </div>
                   <img src={this.props.cardinality} alt="" />
-                  <LanguageSearchBar
-                    className="new language target"
-                    name="target_language"
-                    placeholder="Target language"
-                    value={this.state.targetLanguage}
-                    onChange={this.onInputChange}
-                  />
+                  <div className="autosuggest">
+                    <ReactAutocomplete
+                      inputProps={{ className: "new language target", name: "target_language", placeholder: "Target language" }}
+                      className="autosuggest"
+                      wrapperStyle={{ position: 'relative', display: 'block' }}
+                      value={this.state.target_language}
+                      items={this.state.language_suggestions}
+                      getItemValue={(item) => item.name} // TODO change name to something more appropriate
+                      onSelect={(value, item) => {
+                        this.setState({
+                          target_language: value,
+                          target_language_id: item.glottocode,
+                          language_suggestions: [item]
+                        });
+                      }}
+                      onChange={(event, value) => {
+                        this.setState({ target_language: value, target_language_id: '' })
+                        if(value.length > 2){
+                          this.httpGetAsync(
+                            `http://localhost:8080/bp/api/search?bpsearch=${value}`,
+                            res => {
+                              if (res[0].message) {
+                                this.setState({ language_suggestions: [] })
+                              } else {
+                                this.setState({ language_suggestions: res })
+                              }
+                            }
+                          );
+                        } else {
+                          this.setState({ language_suggestions: [] });
+                        }
+                      }}
+                      renderMenu={this.renderDropdownMenu}
+                      renderItem={this.renderLanguageSuggestion}
+                    />
+                  </div>
                 </section>
               </section>
               {/* <button title="Menu" className="more icon">

@@ -4,6 +4,23 @@
     margin 0
 
     .tools
+      .autosuggest
+        position relative
+
+      .dropdown-menu
+        position absolute
+        left 50px
+        top 50px
+        background-color #6cadfd
+        min-width 160px
+        max-height 150px
+        overflow scroll
+        box-shadow 0px 8px 16px 0px rgba(0,0,0,0.2)
+        z-index 11
+
+        .item-highlighted
+          background-color #91c2fd
+          
       .icon
         cursor initial
         opacity 0.5
@@ -74,6 +91,14 @@
 
     .cardinality
       section
+        .autosuggest
+          &:first-of-type
+            input
+              margin-right 3%
+
+          &:last-of-type
+            input
+              margin-left 3%
         input
           placeholder-color(#DEEDFE)
           width 47%
@@ -89,12 +114,6 @@
 
           &:focus
             background lighten($blue,40%)
-
-          &:first-of-type
-            margin-right 3%
-
-          &:last-of-type
-            margin-left 3%
 
           &.isEditing
             width 46%

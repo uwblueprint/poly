@@ -24,6 +24,14 @@ class BooksController < AuthenticatedController
   def create
     book = current_user.books.build(create_or_update_params)
 
+    if book.source_language_id.length == 0:
+      # TODO: verbatim search source_language in ontology, and set id if there is a result
+    end
+
+    if book.target_language_id.length == 0:
+      # TODO: verbatim search target_language in ontology, and set id if there is a result
+    end
+
     if book.present? && book.save
       authorize book
       render json: { id: book.id }, status: :ok
@@ -38,13 +46,13 @@ class BooksController < AuthenticatedController
     if book.present?
       authorize book
       book.destroy
-      
+
       # Also destroy FavoriteBook records of this book
       FavoriteBook.where(book_id: params[:id])
         .map do |fav_book|
           fav_book.destroy
         end
-      
+
       render json: {}, status: :ok
     else
       skip_authorization
@@ -104,7 +112,9 @@ class BooksController < AuthenticatedController
       :description,
       :video_description,
       :source_language,
-      :target_language
+      :target_language,
+      :source_language_id,
+      :target_language_id,
     )
   end
 end
