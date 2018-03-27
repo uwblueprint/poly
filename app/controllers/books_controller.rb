@@ -28,7 +28,6 @@ class BooksController < AuthenticatedController
     book = current_user.books.build(create_or_update_params)
 
     if book.source_language_id.length == 0
-      # TODO: verbatim search source_language in ontology, and set id if there is a result
       res_id = id_check(book.source_language);
       if res_id != nil
         book.source_language_id = res_id;
