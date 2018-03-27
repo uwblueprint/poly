@@ -5,22 +5,38 @@
 
     .tools
       .autosuggest
-        position relative
+        display table
+        width 47%
+        float left
 
       .dropdown-menu
         position absolute
-        left 50px
         top 50px
-        background-color #6cadfd
-        min-width 160px
+        background-color #ff0000
+        width 227px
         max-height 150px
         overflow scroll
         box-shadow 0px 8px 16px 0px rgba(0,0,0,0.2)
-        z-index 11
+        z-index 20
+
+        .item
+          height 42px
+          background-color #FFFFFF
+          padding-top 6px
+          padding-left 14px
+          white-space nowrap
+          overflow hidden
+          text-overflow ellipsis
+          .title
+            color #11252F
+            font-size 14px
+          .subtitle
+            font-size 10px
+            color #A9A9A9
 
         .item-highlighted
-          background-color #91c2fd
-          
+          background-color #EFF6FE
+
       .icon
         cursor initial
         opacity 0.5
@@ -93,24 +109,20 @@
       section
         .autosuggest
           &:first-of-type
-            input
-              margin-right 3%
+            margin-right 3%
 
           &:last-of-type
-            input
-              margin-left 3%
+            margin-left 3%
         input
           placeholder-color(#DEEDFE)
-          width 47%
+          position initial
           text-align center
-          float left
-          background lighten($blue,20%)
-          border-radius $radius
-          font-size 1.3em
           padding 8px 0 9px
           margin 9px 0 8px
-          position initial
+          background lighten($blue,20%)
+          font-size 1.3em
           color $white
+          border-radius $radius
 
           &:focus
             background lighten($blue,40%)

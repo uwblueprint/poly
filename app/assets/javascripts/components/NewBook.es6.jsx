@@ -13,7 +13,8 @@ class NewBook extends React.Component {
       stream: '',
       isVideoRecording: false,
       isDescriptionPlaying: false,
-      language_suggestions: [],
+      source_language_suggestions: [],
+      target_language_suggestions: [],
       source_language_id: '',
       target_language_id: '',
     };
@@ -247,7 +248,8 @@ class NewBook extends React.Component {
         className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
         key={item.glottocode}
       >
-        {item.name + " - " + item.glottocode}
+        <div className="title">{item.name}</div>
+        <div className="subtitle">{item.glottocode}</div>
       </div>
     );
   }
@@ -285,33 +287,33 @@ class NewBook extends React.Component {
                       inputProps={{ className: "new language source", name: "source_language", placeholder: "Source language" }}
                       wrapperStyle={{ position: 'relative', display: 'block' }}
                       value={this.state.source_language}
-                      items={this.state.language_suggestions}
+                      items={this.state.source_language_suggestions}
                       getItemValue={(item) => item.name} // TODO change name to something more appropriate
                       onSelect={(value, item) => {
                         this.setState({
                           source_language: value,
                           source_language_id: item.glottocode,
-                          language_suggestions: [item]
+                          source_language_suggestions: [item]
                         });
                       }}
                       onChange={(event, value) => {
-                        this.setState({ source_language: value, target_language_id: '' })
+                        this.setState({ source_language: value, source_language_id: '' })
                         if(value.length > 2){
                           this.httpGetAsync(
                             `http://localhost:8080/bp/api/search?bpsearch=${value}`,
                             res => {
                               if (res[0].message) {
-                                this.setState({ language_suggestions: [] })
+                                this.setState({ source_language_suggestions: [] })
                               } else {
-                                this.setState({ language_suggestions: res })
+                                this.setState({ source_language_suggestions: res })
                                 if (res.length == 1) {
-                                  this.setState({ target_language_id: res[0].glottocode });
+                                  this.setState({ source_language_id: res[0].glottocode });
                                 }
                               }
                             }
                           );
                         } else {
-                          this.setState({ language_suggestions: [] });
+                          this.setState({ source_language_suggestions: [] });
                         }
                       }}
                       renderMenu={this.renderDropdownMenu}
@@ -325,13 +327,13 @@ class NewBook extends React.Component {
                       className="autosuggest"
                       wrapperStyle={{ position: 'relative', display: 'block' }}
                       value={this.state.target_language}
-                      items={this.state.language_suggestions}
+                      items={this.state.target_language_suggestions}
                       getItemValue={(item) => item.name} // TODO change name to something more appropriate
                       onSelect={(value, item) => {
                         this.setState({
                           target_language: value,
                           target_language_id: item.glottocode,
-                          language_suggestions: [item]
+                          target_language_suggestions: [item]
                         });
                       }}
                       onChange={(event, value) => {
@@ -341,9 +343,9 @@ class NewBook extends React.Component {
                             `http://localhost:8080/bp/api/search?bpsearch=${value}`,
                             res => {
                               if (res[0].message) {
-                                this.setState({ language_suggestions: [] });
+                                this.setState({ target_language_suggestions: [] });
                               } else {
-                                this.setState({ language_suggestions: res });
+                                this.setState({ target_language_suggestions: res });
                                 if (res.length == 1) {
                                   this.setState({ target_language_id: res[0].glottocode });
                                 }
@@ -351,7 +353,7 @@ class NewBook extends React.Component {
                             }
                           );
                         } else {
-                          this.setState({ language_suggestions: [] });
+                          this.setState({ target_language_suggestions: [] });
                         }
                       }}
                       renderMenu={this.renderDropdownMenu}
