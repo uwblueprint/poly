@@ -300,7 +300,7 @@ class NewBook extends React.Component {
                         this.setState({ source_language: value, source_language_id: '' })
                         if(value.length > 2){
                           this.httpGetAsync(
-                            `http://localhost:8080/bp/api/search?bpsearch=${value}`,
+                            `http://localhost:8080/search?q=${value}&multilingual=true`,
                             res => {
                               if (res[0].message) {
                                 this.setState({ source_language_suggestions: [] })
@@ -340,7 +340,7 @@ class NewBook extends React.Component {
                         this.setState({ target_language: value, target_language_id: '' })
                         if(value.length > 2){
                           this.httpGetAsync(
-                            `http://localhost:8080/bp/api/search?bpsearch=${value}`,
+                            `http://localhost:8080/search?q=${value}&multilingual=true`,
                             res => {
                               if (res[0].message) {
                                 this.setState({ target_language_suggestions: [] });
