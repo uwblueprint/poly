@@ -119,7 +119,7 @@ class BooksController < AuthenticatedController
     uri = URI(url_string);
     result = Net::HTTP.get_response(uri);
     json_obj = JSON.parse(result.body);
-    parsed_result = (json_obj != nil) ? json_obj[0]['glottocode'] : nil
+    parsed_result = (json_obj != nil && json_obj.length == 1) ? json_obj[0]['glottocode'] : nil
     return parsed_result;
   end  
 
