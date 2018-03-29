@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'json'
+require 'net/http'
 class BooksController < AuthenticatedController
   skip_before_filter :authenticate_user!, only: [:show, :show_more]
 
@@ -25,11 +28,17 @@ class BooksController < AuthenticatedController
     book = current_user.books.build(create_or_update_params)
 
     if book.source_language_id.length == 0
-      # TODO: verbatim search source_language in ontology, and set id if there is a result
+      res_id = id_check(book.source_language);
+      if res_id != nil
+        book.source_language_id = res_id;
+      end
     end
 
     if book.target_language_id.length == 0
-      # TODO: verbatim search target_language in ontology, and set id if there is a result
+      res_id = id_check(book.target_language);
+      if res_id != nil
+        book.target_language_id = res_id;
+      end
     end
 
     if book.present? && book.save
@@ -103,6 +112,15 @@ class BooksController < AuthenticatedController
 
     render json: books, status: 200
   end
+
+  def id_check(input_lang)
+    url_string = 'http://localhost:8080/search?q=' + input_lang + '&multilingual=true&namequerytype=whole';
+    uri = URI(url_string);
+    result = Net::HTTP.get_response(uri);
+    json_obj = JSON.parse(result.body);
+    parsed_result = (json_obj != nil && json_obj.length == 1) ? json_obj[0]['glottocode'] : nil
+    return parsed_result;
+  end  
 
   private
 
