@@ -230,7 +230,7 @@ class NewBook extends React.Component {
   }
 
   httpGetAsync(url, callback) {
-    $.ajax({
+    return $.ajax({
       url: url,
       type: 'GET',
       success(res) {
@@ -243,13 +243,14 @@ class NewBook extends React.Component {
   }
 
   renderLanguageSuggestion(item, isHighlighted) {
+    const title = item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0];
     return (
       <div
         className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
         key={item.glottocode}
       >
-        <div className="title">{item.name}</div>
-        <div className="subtitle">{item.glottocode}</div>
+        <div className="title">{title}</div>
+        <div className="subtitle">{item.name}</div>
       </div>
     );
   }
@@ -288,7 +289,7 @@ class NewBook extends React.Component {
                       wrapperStyle={{ position: 'relative', display: 'block' }}
                       value={this.state.source_language}
                       items={this.state.source_language_suggestions}
-                      getItemValue={(item) => item.name} // TODO change name to something more appropriate
+                      getItemValue={(item) => item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0] } // TODO change name to something more appropriate?
                       onSelect={(value, item) => {
                         this.setState({
                           source_language: value,
@@ -299,10 +300,10 @@ class NewBook extends React.Component {
                       onChange={(event, value) => {
                         this.setState({ source_language: value, source_language_id: '' })
                         if(value.length > 2){
-                          this.httpGetAsync(
-                            `http://localhost:8080/search?q=${value}&multilingual=true`,
+                          var req = this.httpGetAsync(
+                            `http://localhost:6543/search?q=${value}&multilingual=true`,
                             res => {
-                              if (res[0].message) {
+                              if (res.length == 0 || res[0].message) {
                                 this.setState({ source_language_suggestions: [] })
                               } else {
                                 this.setState({ source_language_suggestions: res })
@@ -328,7 +329,7 @@ class NewBook extends React.Component {
                       wrapperStyle={{ position: 'relative', display: 'block' }}
                       value={this.state.target_language}
                       items={this.state.target_language_suggestions}
-                      getItemValue={(item) => item.name} // TODO change name to something more appropriate
+                      getItemValue={(item) => item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0] } // TODO change name to something more appropriate?
                       onSelect={(value, item) => {
                         this.setState({
                           target_language: value,
@@ -339,10 +340,10 @@ class NewBook extends React.Component {
                       onChange={(event, value) => {
                         this.setState({ target_language: value, target_language_id: '' })
                         if(value.length > 2){
-                          this.httpGetAsync(
-                            `http://localhost:8080/search?q=${value}&multilingual=true`,
+                          var req = this.httpGetAsync(
+                            `http://localhost:6543/search?q=${value}&multilingual=true`,
                             res => {
-                              if (res[0].message) {
+                              if (res.length == 0 || res[0].message) {
                                 this.setState({ target_language_suggestions: [] });
                               } else {
                                 this.setState({ target_language_suggestions: res });
