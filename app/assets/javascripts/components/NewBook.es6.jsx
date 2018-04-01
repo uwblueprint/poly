@@ -32,8 +32,6 @@ class NewBook extends React.Component {
     this.playButton = this.playButton.bind(this);
     this.pauseButton = this.pauseButton.bind(this);
     this.onDeleteVideoDescription = this.onDeleteVideoDescription.bind(this);
-    this.renderLanguageSuggestion = this.renderLanguageSuggestion.bind(this);
-    this.renderDropdownMenu = this.renderDropdownMenu.bind(this);
   }
 
   onInputChange(e) {
@@ -229,41 +227,6 @@ class NewBook extends React.Component {
     $("video")[0].pause()
   }
 
-  httpGetAsync(url, callback) {
-    return $.ajax({
-      url: url,
-      type: 'GET',
-      success(res) {
-        callback(res);
-      },
-      error(error) {
-        printErrors(error);
-      },
-    });
-  }
-
-  renderLanguageSuggestion(item, isHighlighted) {
-    const title = item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0];
-    return (
-      <div
-        className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
-        key={item.glottocode}
-      >
-        <div className="title">{title}</div>
-        <div className="subtitle">{item.name}</div>
-      </div>
-    );
-  }
-
-  renderDropdownMenu(children) {
-    return (
-      <div className="dropdown-menu">
-        {children}
-      </div>
-    );
-  }
-
-
   render() {
     return (
       <div className="container">
@@ -284,12 +247,10 @@ class NewBook extends React.Component {
               <section className="cardinality">
                 <section>
                   <div className="autosuggest">
-                    <ReactAutocomplete
+                    <LanguageSearchBar
                       inputProps={{ className: "new language source", name: "source_language", placeholder: "Source language" }}
-                      wrapperStyle={{ position: 'relative', display: 'block' }}
                       value={this.state.source_language}
                       items={this.state.source_language_suggestions}
-                      getItemValue={(item) => item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0] } // TODO change name to something more appropriate?
                       onSelect={(value, item) => {
                         this.setState({
                           source_language: value,
@@ -300,8 +261,8 @@ class NewBook extends React.Component {
                       onChange={(event, value) => {
                         this.setState({ source_language: value, source_language_id: '' })
                         if(value.length > 2){
-                          var req = this.httpGetAsync(
-                            `http://localhost:6543/search?q=${value}&multilingual=true`,
+                          var req = asyncSearchLanguage(
+                            value,
                             res => {
                               if (res.length == 0 || res[0].message) {
                                 this.setState({ source_language_suggestions: [] })
@@ -317,19 +278,14 @@ class NewBook extends React.Component {
                           this.setState({ source_language_suggestions: [] });
                         }
                       }}
-                      renderMenu={this.renderDropdownMenu}
-                      renderItem={this.renderLanguageSuggestion}
                     />
                   </div>
                   <img src={this.props.cardinality} alt="" />
                   <div className="autosuggest">
-                    <ReactAutocomplete
+                    <LanguageSearchBar
                       inputProps={{ className: "new language target", name: "target_language", placeholder: "Target language" }}
-                      className="autosuggest"
-                      wrapperStyle={{ position: 'relative', display: 'block' }}
                       value={this.state.target_language}
                       items={this.state.target_language_suggestions}
-                      getItemValue={(item) => item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0] } // TODO change name to something more appropriate?
                       onSelect={(value, item) => {
                         this.setState({
                           target_language: value,
@@ -340,8 +296,8 @@ class NewBook extends React.Component {
                       onChange={(event, value) => {
                         this.setState({ target_language: value, target_language_id: '' })
                         if(value.length > 2){
-                          var req = this.httpGetAsync(
-                            `http://localhost:6543/search?q=${value}&multilingual=true`,
+                          var req = asyncSearchLanguage(
+                            value,
                             res => {
                               if (res.length == 0 || res[0].message) {
                                 this.setState({ target_language_suggestions: [] });
@@ -357,8 +313,6 @@ class NewBook extends React.Component {
                           this.setState({ target_language_suggestions: [] });
                         }
                       }}
-                      renderMenu={this.renderDropdownMenu}
-                      renderItem={this.renderLanguageSuggestion}
                     />
                   </div>
                 </section>
