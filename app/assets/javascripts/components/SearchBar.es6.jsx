@@ -15,7 +15,6 @@ class SearchBar extends React.Component {
     }
   }
 
-  // TODO ReactAutocomplete has a lot of duplicate code, refactor into a new React component
   render() {
     return (
       <form action="/search">

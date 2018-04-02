@@ -5,11 +5,20 @@ class SearchesController < ApplicationController
 
     if params[:q].length > 0
       q = params[:q].downcase
-      @language = Book.all.select{ |book| book if are_close?(q, book.source_language.downcase) || are_close?(q, book.target_language.downcase) || are_close?(q, book.title.downcase)}.sort_by{|book| book.created_at}
-        .reverse
-        .map do |book|
-          BookSerializer.new(book)
-        end
+      glottocode = params[:glottocode]
+      if glottocode.length > 0
+        @language = Book.all.select{ |book| book if q == book.source_language.downcase || q == book.target_language.downcase || q == book.title.downcase || glottocode == book.target_language_id || glottocode == book.source_language_id}.sort_by{|book| book.created_at}
+          .reverse
+          .map do |book|
+            BookSerializer.new(book)
+          end
+      else
+        @language = Book.all.select{ |book| book if q == book.source_language.downcase || q == book.target_language.downcase || q == book.title.downcase}.sort_by{|book| book.created_at}
+          .reverse
+          .map do |book|
+            BookSerializer.new(book)
+          end
+      end
 
       @user = User.all.select{ |user| user if are_close?(q, user.username.downcase) }.sort_by{|user| user.created_at}
         .reverse
