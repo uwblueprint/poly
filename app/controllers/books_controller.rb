@@ -27,21 +27,7 @@ class BooksController < AuthenticatedController
   def create
     book = current_user.books.build(create_or_update_params)
 
-    # when the source_language_id is not set, try to auto-fill it
-    if book.source_language_id.length == 0
-      res_id = id_check(book.source_language)
-      if res_id != nil
-        book.source_language_id = res_id
-      end
-    end
-
-    # when the target_language_id is not set, try to auto-fill it
-    if book.target_language_id.length == 0
-      res_id = id_check(book.target_language)
-      if res_id != nil
-        book.target_language_id = res_id
-      end
-    end
+    book = fill_language_id(book)
 
     if book.present? && book.save
       authorize book
@@ -76,7 +62,9 @@ class BooksController < AuthenticatedController
     authorize book
     if book.present?
      authorize book
-     if book.update_attributes(create_or_update_params)
+     book.assign_attributes(create_or_update_params)
+     book = fill_language_id(book)
+     if book.save
       render json: {}, status: :ok
      else
       render json: { errors: book.errors.full_messages }, status: 422
@@ -113,6 +101,26 @@ class BooksController < AuthenticatedController
     end
 
     render json: books, status: 200
+  end
+
+  def fill_language_id(book)
+    # when the source_language_id is not set, try to auto-fill it
+    if book.source_language_id.length == 0
+      res_id = id_check(book.source_language)
+      if res_id != nil
+        book.source_language_id = res_id
+      end
+    end
+
+    # when the target_language_id is not set, try to auto-fill it
+    if book.target_language_id.length == 0
+      res_id = id_check(book.target_language)
+      if res_id != nil
+        book.target_language_id = res_id
+      end
+    end
+
+    return book
   end
 
   # given a identifier string, get the language ID
