@@ -13,6 +13,8 @@ class Book extends React.Component {
       isInputVideo: false,
       stream: '',
       isVideoRecording: false,
+      source_language_suggestions: [],
+      target_language_suggestions: [],
     };
     this.onSourcePhraseSubmit = this.onSourcePhraseSubmit.bind(this);
     this.onTargetPhraseSubmit = this.onTargetPhraseSubmit.bind(this);
@@ -130,6 +132,8 @@ class Book extends React.Component {
     this.state.errors = [];
     this.state.book.source_language = this.state.book.source_language_draft;
     this.state.book.target_language = this.state.book.target_language_draft;
+    this.state.book.source_language_id = this.state.book.source_language_id_draft;
+    this.state.book.target_language_id = this.state.book.target_language_id_draft;
     this.state.book.title = this.state.book.title_draft;
     this.state.book.description = this.state.book.description_draft;
     if (this.state.book.title && this.state.book.source_language && this.state.book.target_language) {
@@ -161,9 +165,13 @@ class Book extends React.Component {
 
     const sourceLanguageDraft = this.state.book.source_language_draft;
     const targetLanguageDraft = this.state.book.target_language_draft;
+    const sourceLanguageIdDraft = this.state.book.source_language_id_draft;
+    const targetLanguageIdDraft = this.state.book.target_language_id_draft;
 
     newBook.source_language_draft = targetLanguageDraft;
     newBook.target_language_draft = sourceLanguageDraft;
+    newBook.source_language_id_draft = targetLanguageIdDraft;
+    newBook.target_language_id_draft = sourceLanguageIdDraft;
 
     newState.book = newBook;
     this.setState(newState);
@@ -576,12 +584,46 @@ class Book extends React.Component {
   renderSourceLanguage() {
     if (this.state.isEditingBook) {
       return (
-        <input
-          className="new isEditing"
-          name="source_language_draft"
-          onChange={this.onInputChange}
-          value={this.state.book.source_language_draft}
-        />
+        <div className="autosuggest">
+          <LanguageSearchBar
+            inputProps={{ className: "new isEditing", name: "source_language_draft" }}
+            value={this.state.book.source_language_draft}
+            items={this.state.source_language_suggestions}
+            onSelect={(value, item) => {
+              const newBook = this.state.book;
+              newBook.source_language_draft = value;
+              newBook.source_language_id_draft = item.glottocode;
+              this.setState({
+                book: newBook,
+                source_language_suggestions: [item]
+              });
+            }}
+            onChange={(event, value) => {
+              const newBook = this.state.book;
+              newBook.source_language_draft = value;
+              newBook.source_language_id_draft = '';
+              this.setState({ book: newBook })
+              if(value.length > 2){
+                var req = asyncSearchLanguage(
+                  value,
+                  res => {
+                    if (res.length == 0 || res[0].message) {
+                      this.setState({ source_language_suggestions: [] })
+                    } else {
+                      this.setState({ source_language_suggestions: res })
+                      if (res.length == 1) {
+                        newBook.source_language_id_draft = res[0].glottocode;
+                        this.setState({ book: newBook });
+                      }
+                    }
+                  }
+                );
+              } else {
+                this.setState({ source_language_suggestions: [] });
+              }
+            }}
+          />
+        </div>
       );
     }
     return (
@@ -594,12 +636,46 @@ class Book extends React.Component {
   renderTargetLanguage() {
     if (this.state.isEditingBook) {
       return (
-        <input
-          className="new isEditing"
-          name="target_language_draft"
-          onChange={this.onInputChange}
-          value={this.state.book.target_language_draft}
-        />
+        <div className="autosuggest">
+          <LanguageSearchBar
+            inputProps={{ className: "new isEditing", name: "target_language_draft" }}
+            value={this.state.book.target_language_draft}
+            items={this.state.target_language_suggestions}
+            onSelect={(value, item) => {
+              const newBook = this.state.book;
+              newBook.target_language_draft = value;
+              newBook.target_language_id_draft = item.glottocode;
+              this.setState({
+                book: newBook,
+                target_language_suggestions: [item]
+              });
+            }}
+            onChange={(event, value) => {
+              const newBook = this.state.book;
+              newBook.target_language_draft = value;
+              newBook.target_language_id_draft = '';
+              this.setState({ book: newBook })
+              if(value.length > 2){
+                var req = asyncSearchLanguage(
+                  value,
+                  res => {
+                    if (res.length == 0 || res[0].message) {
+                      this.setState({ target_language_suggestions: [] })
+                    } else {
+                      this.setState({ target_language_suggestions: res })
+                      if (res.length == 1) {
+                        newBook.target_language_id_draft = res[0].glottocode;
+                        this.setState({ book: newBook });
+                      }
+                    }
+                  }
+                );
+              } else {
+                this.setState({ target_language_suggestions: [] });
+              }
+            }}
+          />
+        </div>
       );
     }
     return (
@@ -713,6 +789,8 @@ Book.propTypes = {
     title: React.PropTypes.string,
     updated_at: React.PropTypes.string,
     user_id: React.PropTypes.number,
+    source_language_id: React.PropTypes.string,
+    target_language_id: React.PropTypes.string,
   }),
   currentUser: React.PropTypes.shape({
     created_at: React.PropTypes.string,
