@@ -11,6 +11,7 @@ class LanguageSearchBar extends React.Component {
   renderLanguageSuggestion(item, isHighlighted) {
     // TODO couldn't figure out how to call getItemTitle here, even after binding it in constructor
     const title = item.matched_identifiers.length == 0 ? item.glottocode : item.matched_identifiers[0];
+
     return (
       <div
         className={`item ${isHighlighted ? 'item-highlighted' : ''}`}

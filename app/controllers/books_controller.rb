@@ -27,17 +27,19 @@ class BooksController < AuthenticatedController
   def create
     book = current_user.books.build(create_or_update_params)
 
+    # when the source_language_id is not set, try to auto-fill it
     if book.source_language_id.length == 0
-      res_id = id_check(book.source_language);
+      res_id = id_check(book.source_language)
       if res_id != nil
-        book.source_language_id = res_id;
+        book.source_language_id = res_id
       end
     end
 
+    # when the target_language_id is not set, try to auto-fill it
     if book.target_language_id.length == 0
-      res_id = id_check(book.target_language);
+      res_id = id_check(book.target_language)
       if res_id != nil
-        book.target_language_id = res_id;
+        book.target_language_id = res_id
       end
     end
 
@@ -113,14 +115,17 @@ class BooksController < AuthenticatedController
     render json: books, status: 200
   end
 
+  # given a identifier string, get the language ID
+  # only returns an ID if the verbatim search returns exactly one result
   def id_check(input_lang)
-    url_string = 'http://localhost:8080/search?q=' + input_lang + '&multilingual=true&namequerytype=whole';
+    # TODO do not hard-code this URL, move to a config constant
+    url_string = 'http://localhost:6543/search?q=' + input_lang + '&whole=true';
     uri = URI(url_string);
     result = Net::HTTP.get_response(uri);
     json_obj = JSON.parse(result.body);
     parsed_result = (json_obj != nil && json_obj.length == 1) ? json_obj[0]['glottocode'] : nil
     return parsed_result;
-  end  
+  end
 
   private
 

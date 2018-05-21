@@ -11,7 +11,7 @@ function printErrors(error){
 
 function asyncSearchLanguage(query, callback) {
   // TODO don't hardcode URL
-  const url = `http://localhost:6543/search?q=${query}&multilingual=true`
+  const url = `http://localhost:6543/search?q=${query}`
   return $.ajax({
     url: url,
     type: 'GET',
