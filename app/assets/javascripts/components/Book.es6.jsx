@@ -13,8 +13,8 @@ class Book extends React.Component {
       isInputVideo: false,
       stream: '',
       isVideoRecording: false,
-      source_language_suggestions: [],
-      target_language_suggestions: [],
+      sourceLanguageSuggestions: [],
+      targetLanguageSuggestions: [],
     };
     this.onSourcePhraseSubmit = this.onSourcePhraseSubmit.bind(this);
     this.onTargetPhraseSubmit = this.onTargetPhraseSubmit.bind(this);
@@ -42,6 +42,8 @@ class Book extends React.Component {
     this.favoriteImage = this.favoriteImage.bind(this);
     this.isFavoriteBook = this.isFavoriteBook.bind(this);
     this.renderFavoriteButton = this.renderFavoriteButton.bind(this);
+    this.onDeleteVideoDescription = this.onDeleteVideoDescription.bind(this);
+    this.languageSearchOnChange = this.languageSearchOnChange.bind(this);
     // video
     this.onToggleInputType = this.onToggleInputType.bind(this);
     this.onSaveStream = this.onSaveStream.bind(this);
@@ -581,6 +583,42 @@ class Book extends React.Component {
     }
   }
 
+  languageSearchOnSelect(value, item, languageField, languageIdField, suggestionsField) {
+    const newState = this.state;
+    newState.book[languageField] = value;
+    newState.book[languageIdField] = item.glottocode;
+    newState[suggestionsField] = [item]
+    this.setState(newState);
+  }
+
+  languageSearchOnChange(value, languageField, languageIdField, suggestionsField) {
+    const newState = this.state;
+    newState.book[languageField] = value;
+    newState.book[languageIdField] = '';
+    this.setState(newState);
+
+    if(value.length > 2){
+      var req = asyncSearchLanguage(
+        value,
+        res => {
+          if (res.length == 0 || res[0].message) {
+            newState[suggestionsField] = [];
+          } else {
+            newState[suggestionsField] = res;
+            if (res.length == 1) {
+              newState.book[languageIdField] = res[0].glottocode;
+            }
+          }
+          this.setState(newState);
+        }
+      );
+    } else {
+      newState[suggestionsField] = [];
+      this.setState(newState);
+    }
+  }
+
+
   renderSourceLanguage() {
     if (this.state.isEditingBook) {
       return (
@@ -588,40 +626,20 @@ class Book extends React.Component {
           <LanguageSearchBar
             inputProps={{ className: "new isEditing", name: "source_language_draft" }}
             value={this.state.book.source_language_draft}
-            items={this.state.source_language_suggestions}
-            onSelect={(value, item) => {
-              const newBook = this.state.book;
-              newBook.source_language_draft = value;
-              newBook.source_language_id_draft = item.glottocode;
-              this.setState({
-                book: newBook,
-                source_language_suggestions: [item]
-              });
-            }}
-            onChange={(event, value) => {
-              const newBook = this.state.book;
-              newBook.source_language_draft = value;
-              newBook.source_language_id_draft = '';
-              this.setState({ book: newBook })
-              if(value.length > 2){
-                var req = asyncSearchLanguage(
-                  value,
-                  res => {
-                    if (res.length == 0 || res[0].message) {
-                      this.setState({ source_language_suggestions: [] })
-                    } else {
-                      this.setState({ source_language_suggestions: res })
-                      if (res.length == 1) {
-                        newBook.source_language_id_draft = res[0].glottocode;
-                        this.setState({ book: newBook });
-                      }
-                    }
-                  }
-                );
-              } else {
-                this.setState({ source_language_suggestions: [] });
-              }
-            }}
+            items={this.state.sourceLanguageSuggestions}
+            onSelect={(value, item) => this.languageSearchOnSelect(
+              value,
+              item,
+              "source_language_draft",
+              "source_language_id_draft",
+              "sourceLanguageSuggestions"
+            )}
+            onChange={(event, value) => this.languageSearchOnChange(
+              value,
+              "source_language_draft",
+              "source_language_id_draft",
+              "sourceLanguageSuggestions"
+            )}
           />
         </div>
       );
@@ -640,40 +658,20 @@ class Book extends React.Component {
           <LanguageSearchBar
             inputProps={{ className: "new isEditing", name: "target_language_draft" }}
             value={this.state.book.target_language_draft}
-            items={this.state.target_language_suggestions}
-            onSelect={(value, item) => {
-              const newBook = this.state.book;
-              newBook.target_language_draft = value;
-              newBook.target_language_id_draft = item.glottocode;
-              this.setState({
-                book: newBook,
-                target_language_suggestions: [item]
-              });
-            }}
-            onChange={(event, value) => {
-              const newBook = this.state.book;
-              newBook.target_language_draft = value;
-              newBook.target_language_id_draft = '';
-              this.setState({ book: newBook })
-              if(value.length > 2){
-                var req = asyncSearchLanguage(
-                  value,
-                  res => {
-                    if (res.length == 0 || res[0].message) {
-                      this.setState({ target_language_suggestions: [] })
-                    } else {
-                      this.setState({ target_language_suggestions: res })
-                      if (res.length == 1) {
-                        newBook.target_language_id_draft = res[0].glottocode;
-                        this.setState({ book: newBook });
-                      }
-                    }
-                  }
-                );
-              } else {
-                this.setState({ target_language_suggestions: [] });
-              }
-            }}
+            items={this.state.targetLanguageSuggestions}
+            onSelect={(value, item) => this.languageSearchOnSelect(
+              value,
+              item,
+              "target_language_draft",
+              "target_language_id_draft",
+              "targetLanguageSuggestions"
+            )}
+            onChange={(event, value) => this.languageSearchOnChange(
+              value,
+              "target_language_draft",
+              "target_language_id_draft",
+              "targetLanguageSuggestions"
+            )}
           />
         </div>
       );
