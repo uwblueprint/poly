@@ -584,37 +584,37 @@ class Book extends React.Component {
   }
 
   languageSearchOnSelect(value, item, languageField, languageIdField, suggestionsField) {
-    const newState = this.state;
-    newState.book[languageField] = value;
-    newState.book[languageIdField] = item.glottocode;
-    newState[suggestionsField] = [item]
-    this.setState(newState);
+    const newBook = this.state.book;
+
+    newBook[languageField] = value;
+    newBook[languageIdField] = item.glottocode;
+
+    this.setState({ book: newBook, [suggestionsField]: [item] });
   }
 
   languageSearchOnChange(value, languageField, languageIdField, suggestionsField) {
-    const newState = this.state;
-    newState.book[languageField] = value;
-    newState.book[languageIdField] = '';
-    this.setState(newState);
+    const newBook = this.state.book;
+    newBook[languageField] = value;
+    newBook[languageIdField] = '';
+    this.setState({ book: newBook });
 
     if(value.length > 2){
       var req = asyncSearchLanguage(
         value,
         res => {
           if (res.length == 0 || res[0].message) {
-            newState[suggestionsField] = [];
+            this.setState({ [suggestionsField]: [] });
           } else {
-            newState[suggestionsField] = res;
+            this.setState({ [suggestionsField]: res });
             if (res.length == 1) {
-              newState.book[languageIdField] = res[0].glottocode;
+              newBook[languageIdField] = res[0].glottocode;
+              this.setState({ book: newBook });
             }
           }
-          this.setState(newState);
         }
       );
     } else {
-      newState[suggestionsField] = [];
-      this.setState(newState);
+      this.setState({ [suggestionsField]: [] });
     }
   }
 

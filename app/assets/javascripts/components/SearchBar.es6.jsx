@@ -4,8 +4,8 @@ class SearchBar extends React.Component {
     super(props);
     this.state = {
       query: '',
-      language_suggestions: [],
-      language_id: '',
+      languageSuggestions: [],
+      languageId: '',
     };
   }
 
@@ -23,32 +23,32 @@ class SearchBar extends React.Component {
           <LanguageSearchBar
             inputProps={{ type:"text", name:"q", placeholder:"Search", dir:"auto", defaultValue:this.hasQueryValue() }}
             value={this.state.query}
-            items={this.state.language_suggestions}
+            items={this.state.languageSuggestions}
             onSelect={(value, item) => {
               this.setState({
                 query: value,
-                language_id: item.glottocode,
-                language_suggestions: [item]
+                languageId: item.glottocode,
+                languageSuggestions: [item]
               });
             }}
             onChange={(event, value) => {
-              this.setState({ query: value, language_id: '' })
+              this.setState({ query: value, languageId: '' })
               if(value.length > 2){
                 var req = asyncSearchLanguage(
                   value,
                   res => {
                     if (res.length == 0 || res[0].message) {
-                      this.setState({ language_suggestions: [] })
+                      this.setState({ languageSuggestions: [] })
                     } else {
-                      this.setState({ language_suggestions: res })
+                      this.setState({ languageSuggestions: res })
                       if (res.length == 1) {
-                        this.setState({ target_language_id: res[0].glottocode });
+                        this.setState({ target_languageId: res[0].glottocode });
                       }
                     }
                   }
                 );
               } else {
-                this.setState({ language_suggestions: [] });
+                this.setState({ languageSuggestions: [] });
               }
             }}
           />
@@ -59,7 +59,7 @@ class SearchBar extends React.Component {
         className="hiddenInput"
         name="glottocode"
         dir="auto"
-        value={this.state.language_id}
+        value={this.state.languageId}
       />
       </form>
     );

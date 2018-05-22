@@ -229,37 +229,32 @@ class NewBook extends React.Component {
   }
 
   languageSearchOnSelect(value, item, languageField, languageIdField, suggestionsField) {
-    const newState = this.state;
-    newState[languageField] = value;
-    newState[languageIdField] = item.glottocode;
-    newState[suggestionsField] = [item]
-    this.setState(newState);
+    this.setState({
+      [languageField]: value,
+      [languageIdField]: item.glottocode,
+      [suggestionsField]: [item]
+    });
   }
 
   languageSearchOnChange(value, languageField, languageIdField, suggestionsField) {
-    const newState = this.state;
-    newState[languageField] = value;
-    newState[languageIdField] = '';
-    this.setState(newState);
+    this.setState({ [languageField]: value, [languageIdField]: '' });
 
     if(value.length > 2){
       var req = asyncSearchLanguage(
         value,
         res => {
           if (res.length == 0 || res[0].message) {
-            newState[suggestionsField] = [];
+            this.setState({ [suggestionsField]: [] });
           } else {
-            newState[suggestionsField] = res;
+            this.setState({ [suggestionsField]: res });
             if (res.length == 1) {
-              newState[languageIdField] = res[0].glottocode;
+              this.setState({ [languageIdField]: res[0].glottocode });
             }
           }
-          this.setState(newState);
         }
       );
     } else {
-      newState[suggestionsField] = [];
-      this.setState(newState);
+      this.setState({ [suggestionsField]: [] });
     }
   }
 
