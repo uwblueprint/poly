@@ -11,10 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180326211303) do
+ActiveRecord::Schema.define(version: 20180426211506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "archive_videos", force: :cascade do |t|
+    t.string "video_id"
+    t.string "video_url"
+    t.string "srt_url"
+  end
 
   create_table "books", force: :cascade do |t|
     t.string   "title",              null: false
