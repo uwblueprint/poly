@@ -65,6 +65,7 @@ class NavBar extends React.Component {
             <img src={this.props.detail} alt="" />
           </span>
         </a>
+        <a class="language home" href="/languages">Languages Home</a>
         <SearchBar query={this.props.query} search={this.props.search} />
         {this.renderSignIn()}
       </nav>

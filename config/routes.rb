@@ -23,7 +23,9 @@ Rails.application.routes.draw do
   get "/video-upload" => "video_uploads#presigned_url"
   get "/features" => "features#show"
   get "/admin" => "admin#show"
-
+  get "/languages" => "languages#index"
+  get "/languages/:source_language" => "languages#show"
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

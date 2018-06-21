@@ -585,9 +585,7 @@ class Book extends React.Component {
       );
     }
     return (
-      <h1 className="language source" title={this.state.book.source_language}>
-        {this.state.book.source_language}
-      </h1>
+      <a href={'/languages/' + this.state.book.source_language} className="language source" title={this.state.book.source_language} >{this.state.book.source_language}</a>
     );
   }
 
