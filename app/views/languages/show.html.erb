@@ -1,6 +1,18 @@
-<html> 
-<a class="language home" href="/languages">Languages Home</a>
-<h1 class="language">
-	<%= "No language object so not passing anything" %>
-</h1>
+<html>
+  <body>
+  <% language = @videos['Languages Used'].split(',')[0] %>
+  <% speaker = @video['Speakers'].split('_') %>
+  <div class='watch-video-container'>
+    <h2 class='watch-video-title'> <%= speaker + " speaking " + language %> </h2>
+    <video class="watch-video-component" autoPlay controls>
+      <source src="<%= @video_url.video_url %>" type="video/mp4" />
+    </video>
+    <div><%= @videos['Caption File Link'] %></div>
+    <div><%= @videos['IDv2'] %></div>
+    <p class='watch-video-description'>
+      <%= @videos['Demographics'] %>
+    </p>
+  </div>
+  </body>
 </html>
+<link rel="stylesheet" type="text/css" href="/assets/css/app.css">

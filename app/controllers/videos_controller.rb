@@ -9,6 +9,7 @@ class VideosController < ApplicationController
   def show
     @video = get_by_id(params[:id])
     @video_url = get_video_url(params[:id])
+    puts (:id)
     render 'video'
   end
 

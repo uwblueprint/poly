@@ -1,8 +1,18 @@
-<html> 
-<a class="language home" href="/">
-  <%= image_tag "icons/icon-logomark.svg"%>
-  <span class="detail">
-    <%= image_tag "icons/icon-logotype.svg"%>
-  </span>
-</a>
+<html>
+  <body>
+  <% language = @videos[0]['Languages Used'].split(',')[0] %>
+  <% speaker = @videos[0]['Speakers'].split('_') %>
+  <div class='watch-video-container'>
+    <h2 class='watch-video-title'> <%= speaker[0] + " speaking " + language %> </h2>
+    <video class="watch-video-component" autoPlay controls>
+      <source src="<%= @videos[0]['video_url'] %>" type="video/mp4" />
+    </video>
+    <div><%= @videos[0]['Caption File Link'] %></div>
+    <div><%= @videos[0]['IDv2'] %></div>
+    <p class='watch-video-description'>
+      <%= @videos[0]['Demographics'] %>
+    </p>
+  </div>
+  </body>
 </html>
+<link rel="stylesheet" type="text/css" href="/assets/css/app.css">
